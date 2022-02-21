@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prepare": "patch-package && husky install",
+    "prepare": "echo 'you need to manually run patch-package with this command - patch -p1 -i patches\\twitch-js+1.2.13.patch' && husky install",
     "prestart": "yarn run changelog",
     "start": "react-scripts start",
     "prebuild": "yarn run changelog",
@@ -100,7 +100,12 @@
       "prettier"
     ],
     "rules": {
-      "prettier/prettier": "error",
+      "prettier/prettier": [
+        "error",
+        {
+          "endOfLine": "auto"
+        }
+      ],
       "import/no-anonymous-default-export": [
         "warn",
         {
@@ -141,5 +146,6 @@
     "nD00rn <ndoorn@outlook.com>",
     "tollus"
   ],
-  "homepage": "https://yata.vercel.app"
+  "homepage": "https://yata.vercel.app",
+  "packageManager": "yarn@3.1.1"
 }

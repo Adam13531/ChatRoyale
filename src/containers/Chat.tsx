@@ -1,10 +1,3 @@
-import _ from 'lodash'
-import { Component } from 'react'
-import { connect } from 'react-redux'
-import { Redirect } from 'react-router'
-import { nanoid } from 'nanoid'
-import tmi, { Client as TwitchClient, Payment, Raid, Ritual, RoomState as RawRoomState, UserState } from 'twitch-js'
-
 import Emoticons from 'constants/emoticons'
 import Event from 'constants/event'
 import LogType from 'constants/logType'
@@ -14,19 +7,25 @@ import ReadyState from 'constants/readyState'
 import RitualType from 'constants/ritualType'
 import Status from 'constants/status'
 import Bttv from 'libs/Bttv'
+import ChatRoyale, { ChatRoyaleEvent } from 'libs/ChatRoyale'
 import Chatter from 'libs/Chatter'
 import EmotesProvider, { Emote, EmoteProviderPrefix, TwitchEmote } from 'libs/EmotesProvider'
+import Ffz from 'libs/Ffz'
 import Message, { SerializedMessage } from 'libs/Message'
 import Notice from 'libs/Notice'
 import Notification, { NotificationEvent } from 'libs/Notification'
+import PubSub, { PubSubEvent } from 'libs/PubSub'
 import RejectedMessage from 'libs/RejectedMessage'
 import Resources from 'libs/Resources'
 import Robotty from 'libs/Robotty'
 import RoomState from 'libs/RoomState'
 import Sound, { SoundId } from 'libs/Sound'
 import Twitch from 'libs/Twitch'
-import Ffz from 'libs/Ffz'
-import PubSub, { PubSubEvent } from 'libs/PubSub'
+import _ from 'lodash'
+import { nanoid } from 'nanoid'
+import { Component } from 'react'
+import { connect } from 'react-redux'
+import { Redirect } from 'react-router'
 import { resetAppState, setLastWhisperSender, updateEmotes, updateRoomState, updateStatus } from 'store/ducks/app'
 import {
   addChatter,
@@ -55,6 +54,7 @@ import {
   getTheme,
 } from 'store/selectors/settings'
 import { getChatLoginDetails, getIsMod } from 'store/selectors/user'
+import tmi, { Client as TwitchClient, Payment, Raid, Ritual, RoomState as RawRoomState, UserState } from 'twitch-js'
 
 /**
  * React State.
@@ -157,6 +157,7 @@ export class ChatClient extends Component<Props, State> {
     PubSub.addHandler(PubSubEvent.ApprovedAutomodMessage, this.onApprovedAutomodMessage)
     PubSub.addHandler(PubSubEvent.DeniedAutomodMessage, this.onDeniedAutomodMessage)
     PubSub.addHandler(PubSubEvent.ExpiredAutomodMessage, this.onExpiredAutomodMessage)
+    ChatRoyale.addHandler(ChatRoyaleEvent.LogToChat, this.onLogToChat)
 
     try {
       await this.client.connect()
@@ -865,6 +866,16 @@ export class ChatClient extends Component<Props, State> {
     const rejectedMessage = new RejectedMessage(username, messageId, message, reason)
 
     this.props.addLog(rejectedMessage.serialize())
+  }
+
+  private onLogToChat = (test: string) => {
+    const logMsg: any = {
+      id: nanoid(),
+      message: test,
+      type: LogType.Notice,
+    }
+
+    this.props.addLog(logMsg)
   }
 
   /**

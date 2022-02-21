@@ -24,3 +24,8 @@ yarn-debug.log*
 yarn-error.log*
 
 /src/CHANGELOG.md
+
+# Need to do this on Windows at least
+.yarn/cache
+.yarn/install-state.gz
+.yarn/releases

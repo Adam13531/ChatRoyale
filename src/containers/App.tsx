@@ -22,6 +22,7 @@ import Auth from 'containers/Auth'
 import Channel from 'containers/Channel'
 import StreamList from 'containers/StreamList'
 import Twitch from 'libs/Twitch'
+import ChatRoyale from 'libs/ChatRoyale'
 import { setShouldReadChangelog } from 'store/ducks/app'
 import { setVersion, toggleHideHeader } from 'store/ducks/settings'
 import { resetUser } from 'store/ducks/user'
@@ -85,6 +86,7 @@ class App extends React.Component<Props, State> {
 
     this.installTheme()
     this.setUpTwitchApi()
+    this.connectToChatRoyale()
   }
 
   /**
@@ -206,6 +208,10 @@ class App extends React.Component<Props, State> {
     } else {
       Twitch.setAuthDetails(null)
     }
+  }
+
+  private connectToChatRoyale() {
+    ChatRoyale.connect()
   }
 
   /**
