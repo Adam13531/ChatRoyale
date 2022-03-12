@@ -358,6 +358,14 @@ export class ChatClient extends Component<Props, State> {
    */
   private onLogon = () => {
     this.props.updateStatus(Status.Logon)
+    ChatRoyale.setUsername(this.props.loginDetails!.username)
+    this.connectToChatRoyale()
+  }
+
+  private connectToChatRoyale() {
+    if (!ChatRoyale.isConnected()) {
+      ChatRoyale.connect()
+    }
   }
 
   /**

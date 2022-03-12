@@ -1,14 +1,27 @@
+import _ from 'lodash'
+
 export enum ChatRoyaleEvent {
   LogToChat,
 }
 
 const RECONNECT_INTERVAL = 5000
 
+enum GameState {
+  Idle = 1, // waiting for a command to start things
+  Lobby, // players can register themselves
+  Round, // playing a round
+  InBetween, // between rounds. Waiting for a command to start the next round.
+  End, // The game is over
+}
+
 export default class ChatRoyale {
   private static ws: Optional<WebSocket>
   private static handlers: { [key in ChatRoyaleEvent]?: () => void } = {}
   private static reconnectTimeout?: number
   private static printCloseMessage: boolean = false
+  private static gameState: GameState = GameState.Idle
+  private static allPlayers: string[]
+  private static username?: string
 
   public static connect() {
     ChatRoyale.ws = new WebSocket('ws://localhost:7896/echo')
@@ -17,7 +30,14 @@ export default class ChatRoyale {
     ChatRoyale.ws.onclose = ChatRoyale.onClose
   }
 
+  public static isConnected(): boolean {
+    return !_.isNil(ChatRoyale.ws) && (ChatRoyale.ws.readyState === 0 || ChatRoyale.ws.readyState === 1)
+  }
+
   private static startReconnectCycle() {
+    if (ChatRoyale.reconnectTimeout) {
+      window.clearTimeout(ChatRoyale.reconnectTimeout)
+    }
     ChatRoyale.reconnectTimeout = window.setInterval(() => {
       ChatRoyale.reconnect()
     }, RECONNECT_INTERVAL)
@@ -68,8 +88,28 @@ export default class ChatRoyale {
     window.clearTimeout(ChatRoyale.reconnectTimeout)
   }
 
+  public static setUsername(username: string) {
+    ChatRoyale.username = username
+  }
+
+  private static amIPlaying(): boolean {
+    const lowercasePlayers = _.map(ChatRoyale.allPlayers, (s) => s.toLowerCase())
+
+    return _.includes(lowercasePlayers, ChatRoyale.username?.toLowerCase())
+  }
+
   private static onMessage(evt: MessageEvent) {
-    ChatRoyale.log('Received message: ' + evt.data)
+    try {
+      const parsed = JSON.parse(evt.data)
+      ChatRoyale.log(`Got a JSON message of type "${parsed.type}": ${evt.data}`)
+      if (parsed.type === 'STATE') {
+        ChatRoyale.gameState = parsed.currentState
+        ChatRoyale.allPlayers = parsed.players
+        ChatRoyale.log(`amIPlaying: ${ChatRoyale.amIPlaying()}`)
+      }
+    } catch (e) {
+      ChatRoyale.log("Got a message that wasn't JSON: " + evt.data)
+    }
   }
 
   private static onClose() {
