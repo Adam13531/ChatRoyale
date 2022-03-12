@@ -35,7 +35,7 @@ import {
   markChatterAsUnbanned,
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
-import { setModerator } from 'store/ducks/user'
+import { setModerator, setChatRoyalePlayers } from 'store/ducks/user'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -158,6 +158,7 @@ export class ChatClient extends Component<Props, State> {
     PubSub.addHandler(PubSubEvent.DeniedAutomodMessage, this.onDeniedAutomodMessage)
     PubSub.addHandler(PubSubEvent.ExpiredAutomodMessage, this.onExpiredAutomodMessage)
     ChatRoyale.addHandler(ChatRoyaleEvent.LogToChat, this.onLogToChat)
+    ChatRoyale.addHandler(ChatRoyaleEvent.SetPlayers, this.onSetPlayers)
 
     try {
       await this.client.connect()
@@ -876,6 +877,10 @@ export class ChatClient extends Component<Props, State> {
     this.props.addLog(rejectedMessage.serialize())
   }
 
+  private onSetPlayers = (players: string[]) => {
+    this.props.setChatRoyalePlayers(players)
+  }
+
   private onLogToChat = (test: string) => {
     const logMsg: any = {
       id: nanoid(),
@@ -1461,6 +1466,7 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     resetAppState,
     setLastWhisperSender,
     setModerator,
+    setChatRoyalePlayers,
     unshiftLog,
     updateEmotes,
     updateRoomState,
@@ -1510,6 +1516,7 @@ interface DispatchProps {
   resetAppState: typeof resetAppState
   setLastWhisperSender: typeof setLastWhisperSender
   setModerator: typeof setModerator
+  setChatRoyalePlayers: typeof setChatRoyalePlayers
   unshiftLog: typeof unshiftLog
   updateRoomState: typeof updateRoomState
   updateEmotes: typeof updateEmotes

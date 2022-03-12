@@ -2,6 +2,7 @@ import _ from 'lodash'
 
 export enum ChatRoyaleEvent {
   LogToChat,
+  SetPlayers,
 }
 
 const RECONNECT_INTERVAL = 5000
@@ -64,6 +65,7 @@ export default class ChatRoyale {
   }
 
   public static addHandler(type: ChatRoyaleEvent.LogToChat, handler: LogToChatHandler): void
+  public static addHandler(type: ChatRoyaleEvent.SetPlayers, handler: SetPlayersHandler): void
   public static addHandler(type: ChatRoyaleEvent, handler: (...args: any) => void) {
     ChatRoyale.handlers[type] = handler
   }
@@ -105,6 +107,7 @@ export default class ChatRoyale {
       if (parsed.type === 'STATE') {
         ChatRoyale.gameState = parsed.currentState
         ChatRoyale.allPlayers = parsed.players
+        ChatRoyale.callHandler<LogToChatHandler>(ChatRoyaleEvent.SetPlayers, parsed.players)
         ChatRoyale.log(`amIPlaying: ${ChatRoyale.amIPlaying()}`)
       }
     } catch (e) {
@@ -129,4 +132,5 @@ export default class ChatRoyale {
   }
 }
 
-type LogToChatHandler = (test: string) => void
+type LogToChatHandler = (msg: string) => void
+type SetPlayersHandler = (players: string[]) => void
