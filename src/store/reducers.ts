@@ -6,6 +6,7 @@ import logs, { LogsActions } from 'store/ducks/logs'
 import notes, { NotesActions } from 'store/ducks/notes'
 import settings, { SettingsActions } from 'store/ducks/settings'
 import user, { UserActions } from 'store/ducks/user'
+import chatRoyale, { ChatRoyaleActions } from 'store/ducks/chatroyale'
 
 /**
  * Reducers.
@@ -20,6 +21,7 @@ const reducers: ReducersMapObject<ApplicationState, ApplicationActions | any> = 
   notes,
   settings,
   user,
+  chatRoyale,
 }
 
 export default reducers
@@ -27,7 +29,14 @@ export default reducers
 /**
  * Application actions
  */
-type ApplicationActions = AppActions | LogsActions | NotesActions | UserActions | ChattersActions | SettingsActions
+type ApplicationActions =
+  | AppActions
+  | LogsActions
+  | NotesActions
+  | UserActions
+  | ChatRoyaleActions
+  | ChattersActions
+  | SettingsActions
 
 /**
  * Application state.
@@ -38,5 +47,6 @@ export interface ApplicationState {
   logs: ReturnType<typeof logs>
   notes: ReturnType<typeof notes>
   user: ReturnType<typeof user>
+  chatRoyale: ReturnType<typeof chatRoyale>
   settings: ReturnType<typeof settings>
 }
