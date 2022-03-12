@@ -35,7 +35,8 @@ import {
   markChatterAsUnbanned,
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
-import { setModerator, setChatRoyalePlayers } from 'store/ducks/user'
+import { setModerator } from 'store/ducks/user'
+import { setPlayers } from 'store/ducks/chatroyale'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -878,7 +879,7 @@ export class ChatClient extends Component<Props, State> {
   }
 
   private onSetPlayers = (players: string[]) => {
-    this.props.setChatRoyalePlayers(players)
+    this.props.setPlayers(players)
   }
 
   private onLogToChat = (test: string) => {
@@ -1466,7 +1467,7 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     resetAppState,
     setLastWhisperSender,
     setModerator,
-    setChatRoyalePlayers,
+    setPlayers,
     unshiftLog,
     updateEmotes,
     updateRoomState,
@@ -1516,7 +1517,7 @@ interface DispatchProps {
   resetAppState: typeof resetAppState
   setLastWhisperSender: typeof setLastWhisperSender
   setModerator: typeof setModerator
-  setChatRoyalePlayers: typeof setChatRoyalePlayers
+  setPlayers: typeof setPlayers
   unshiftLog: typeof unshiftLog
   updateRoomState: typeof updateRoomState
   updateEmotes: typeof updateEmotes

@@ -86,7 +86,7 @@ import {
   getShowContextMenu,
   getShowViewerCount,
 } from 'store/selectors/settings'
-import { getChatRoyalePlayers } from 'store/selectors/user'
+import { getPlayers } from 'store/selectors/chatroyale'
 import { getIsMod, getLoginDetails } from 'store/selectors/user'
 import styled from 'styled'
 import { sanitizeUrlForPreview } from 'utils/html'
@@ -279,20 +279,18 @@ class Channel extends Component<Props, State> {
       loginDetails,
       markNewAsUnread,
       showContextMenu,
-      chatRoyalePlayers,
+      players,
     } = this.props
 
     if (_.isNil(channel)) {
       return <Spinner large />
     }
 
-    const players = JSON.stringify(chatRoyalePlayers)
-
     return (
       <FlexLayout vertical ref={this.logsWrapper as any}>
         <Helmet>
           <title>
-            {channel} - YaTA {players}
+            {channel} - YaTA {JSON.stringify(players)}
           </title>
         </Helmet>
         <ReactTooltip html effect="solid" getContent={this.getTooltipContent} className="channelTooltip" />
@@ -1491,7 +1489,7 @@ const enhance = compose<Props, {}>(
       roomState: getRoomState(state),
       shortcuts: getShortcuts(state),
       showContextMenu: getShowContextMenu(state),
-      chatRoyalePlayers: getChatRoyalePlayers(state),
+      players: getPlayers(state),
       showViewerCount: getShowViewerCount(state),
       status: getStatus(state),
     }),
@@ -1540,7 +1538,7 @@ interface StateProps {
   prioritizeUsernames: ReturnType<typeof getPrioritizeUsernames>
   roomState: ReturnType<typeof getRoomState>
   showContextMenu: ReturnType<typeof getShowContextMenu>
-  chatRoyalePlayers: ReturnType<typeof getChatRoyalePlayers>
+  players: ReturnType<typeof getPlayers>
   showViewerCount: ReturnType<typeof getShowViewerCount>
   status: ReturnType<typeof getStatus>
 }
