@@ -40,6 +40,10 @@ export const getChatLoginDetails = createSelector([getUserState], (user) => {
   }
 })
 
+export const getChatRoyalePlayers = createSelector([getUserState], (user) => {
+  return user.chatRoyalePlayers
+})
+
 /**
  * Returns the login details.
  * @param  state - The Redux state.

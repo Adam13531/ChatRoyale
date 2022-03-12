@@ -12,6 +12,7 @@ export enum Actions {
   SET_TOKENS = 'user/SET_TOKENS',
   RESET = 'user/RESET',
   SET_MODERATOR = 'user/SET_MODERATOR',
+  SET_CHAT_ROYALE_PLAYERS = 'user/SET_CHAT_ROYALE_PLAYERS',
 }
 
 /**
@@ -20,6 +21,7 @@ export enum Actions {
 export const initialState = {
   isMod: false,
   tokens: null,
+  chatRoyalePlayers: [],
   username: null,
 }
 
@@ -36,7 +38,7 @@ const userReducer: Reducer<UserState, UserActions> = (state = initialState, acti
         return state
       }
 
-      return { ...action.payload.user, isMod: false }
+      return { ...action.payload.user, isMod: false, chatRoyalePlayers: [] }
     }
     case Actions.SET_TOKENS: {
       return {
@@ -52,6 +54,12 @@ const userReducer: Reducer<UserState, UserActions> = (state = initialState, acti
       return {
         ...state,
         isMod: action.payload.isMod,
+      }
+    }
+    case Actions.SET_CHAT_ROYALE_PLAYERS: {
+      return {
+        ...state,
+        chatRoyalePlayers: action.payload.players,
       }
     }
     default: {
@@ -90,6 +98,11 @@ export const setModerator = (isMod: boolean) =>
     isMod,
   })
 
+export const setChatRoyalePlayers = (players: string[]) =>
+  createAction(Actions.SET_CHAT_ROYALE_PLAYERS, {
+    players,
+  })
+
 /**
  * User actions.
  */
@@ -97,6 +110,7 @@ export type UserActions =
   | RehydrateAction
   | ReturnType<typeof setTokens>
   | ReturnType<typeof resetUser>
+  | ReturnType<typeof setChatRoyalePlayers>
   | ReturnType<typeof setModerator>
 
 /**
@@ -115,6 +129,8 @@ export type UserState = {
    * Username.
    */
   username: string | null
+
+  chatRoyalePlayers: string[]
 
   /**
    * `true` when the user is a moderator.
