@@ -13,6 +13,7 @@ import _ from 'lodash'
 import * as React from 'react'
 import { Helmet } from 'react-helmet-async'
 
+import ChatRoyaleHeader from 'components/ChatRoyaleHeader'
 import HeaderTooltip from 'components/HeaderTooltip'
 import Page from 'constants/page'
 import Status from 'constants/status'
@@ -142,10 +143,7 @@ export default class Header extends React.Component<Props> {
         </Helmet>
         <TitleHeaderNavbarGroup>
           <NavbarHeading>
-            <HeaderConsumer>
-              {({ titleComponent }) => (!_.isNil(titleComponent) ? <span>{titleComponent} - </span> : null)}
-            </HeaderConsumer>
-            YaTA
+            <ChatRoyaleHeader />
           </NavbarHeading>
           {this.renderStatus()}
         </TitleHeaderNavbarGroup>

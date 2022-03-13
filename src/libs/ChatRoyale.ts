@@ -3,6 +3,8 @@ import _ from 'lodash'
 export enum ChatRoyaleEvent {
   LogToChat,
   SetPlayers,
+  SetGameState,
+  SetMyState,
 }
 
 const RECONNECT_INTERVAL = 5000
@@ -66,6 +68,8 @@ export default class ChatRoyale {
 
   public static addHandler(type: ChatRoyaleEvent.LogToChat, handler: LogToChatHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetPlayers, handler: SetPlayersHandler): void
+  public static addHandler(type: ChatRoyaleEvent.SetGameState, handler: SetGameStateHandler): void
+  public static addHandler(type: ChatRoyaleEvent.SetMyState, handler: SetMyStateHandler): void
   public static addHandler(type: ChatRoyaleEvent, handler: (...args: any) => void) {
     ChatRoyale.handlers[type] = handler
   }
@@ -100,15 +104,35 @@ export default class ChatRoyale {
     return _.includes(lowercasePlayers, ChatRoyale.username?.toLowerCase())
   }
 
+  public static getStateStringFromState(state: GameState): string {
+    switch (state) {
+      case GameState.Idle:
+        return 'Waiting for server to start'
+      case GameState.Lobby:
+        return 'Waiting for game to start'
+      case GameState.Round:
+        return 'Mid-game'
+      case GameState.InBetween:
+        return 'In between rounds'
+      case GameState.End:
+        return 'End of game'
+      default:
+        return 'Unrecognized game state'
+    }
+  }
+
   private static onMessage(evt: MessageEvent) {
     try {
       const parsed = JSON.parse(evt.data)
       ChatRoyale.log(`Got a JSON message of type "${parsed.type}": ${evt.data}`)
       if (parsed.type === 'STATE') {
-        ChatRoyale.gameState = parsed.currentState
+        ChatRoyale.gameState = parsed.gameState
         ChatRoyale.allPlayers = parsed.players
-        ChatRoyale.callHandler<LogToChatHandler>(ChatRoyaleEvent.SetPlayers, parsed.players)
-        ChatRoyale.log(`amIPlaying: ${ChatRoyale.amIPlaying()}`)
+        ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, parsed.players)
+        const gameStateString = ChatRoyale.getStateStringFromState(ChatRoyale.gameState)
+        ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
+        const myState = ChatRoyale.amIPlaying() ? 'You are playing' : 'Type anything to join'
+        ChatRoyale.callHandler<SetMyStateHandler>(ChatRoyaleEvent.SetMyState, myState)
       }
     } catch (e) {
       ChatRoyale.log("Got a message that wasn't JSON: " + evt.data)
@@ -119,6 +143,9 @@ export default class ChatRoyale {
     if (ChatRoyale.printCloseMessage) {
       ChatRoyale.log('WebSocket connection closed. Entering reconnect loop.')
       ChatRoyale.printCloseMessage = false
+      ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, 'Disconnected')
+      ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, [])
+      ChatRoyale.callHandler<SetMyStateHandler>(ChatRoyaleEvent.SetMyState, 'Reconnecting')
     }
 
     // Start trying to reconnect in case we never end up connecting in the first
@@ -134,3 +161,5 @@ export default class ChatRoyale {
 
 type LogToChatHandler = (msg: string) => void
 type SetPlayersHandler = (players: string[]) => void
+type SetGameStateHandler = (gameState: string) => void
+type SetMyStateHandler = (myState: string) => void

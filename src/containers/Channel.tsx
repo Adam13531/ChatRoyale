@@ -86,7 +86,6 @@ import {
   getShowContextMenu,
   getShowViewerCount,
 } from 'store/selectors/settings'
-import { getPlayers } from 'store/selectors/chatroyale'
 import { getIsMod, getLoginDetails } from 'store/selectors/user'
 import styled from 'styled'
 import { sanitizeUrlForPreview } from 'utils/html'
@@ -279,7 +278,6 @@ class Channel extends Component<Props, State> {
       loginDetails,
       markNewAsUnread,
       showContextMenu,
-      players,
     } = this.props
 
     if (_.isNil(channel)) {
@@ -289,9 +287,7 @@ class Channel extends Component<Props, State> {
     return (
       <FlexLayout vertical ref={this.logsWrapper as any}>
         <Helmet>
-          <title>
-            {channel} - YaTA {JSON.stringify(players)}
-          </title>
+          <title>{channel} - YaTA</title>
         </Helmet>
         <ReactTooltip html effect="solid" getContent={this.getTooltipContent} className="channelTooltip" />
         <StreamOmnibar visible={showStreamOmnibar} toggle={this.toggleStreamOmnibar} />
@@ -1489,7 +1485,6 @@ const enhance = compose<Props, {}>(
       roomState: getRoomState(state),
       shortcuts: getShortcuts(state),
       showContextMenu: getShowContextMenu(state),
-      players: getPlayers(state),
       showViewerCount: getShowViewerCount(state),
       status: getStatus(state),
     }),
@@ -1538,7 +1533,6 @@ interface StateProps {
   prioritizeUsernames: ReturnType<typeof getPrioritizeUsernames>
   roomState: ReturnType<typeof getRoomState>
   showContextMenu: ReturnType<typeof getShowContextMenu>
-  players: ReturnType<typeof getPlayers>
   showViewerCount: ReturnType<typeof getShowViewerCount>
   status: ReturnType<typeof getStatus>
 }

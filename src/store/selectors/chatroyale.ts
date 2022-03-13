@@ -12,3 +12,11 @@ const getChatRoyaleState = (state: ApplicationState) => state.chatRoyale
 export const getPlayers = createSelector([getChatRoyaleState], (state) => {
   return state.players
 })
+
+export const getGameState = createSelector([getChatRoyaleState], (state) => {
+  return state.gameState
+})
+
+export const getMyState = createSelector([getChatRoyaleState], (state) => {
+  return state.myState
+})
