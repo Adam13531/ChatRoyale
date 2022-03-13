@@ -44,7 +44,13 @@ export const getMyState = createSelector([getChatRoyaleState, getUserState], (st
 
   const lowercasePlayers = _.map(players, (s) => s.toLowerCase())
   const amIPlaying = _.includes(lowercasePlayers, myName.toLowerCase())
-  const myState = amIPlaying ? 'You are playing' : 'Type anything to join'
 
-  return myState
+  if (!amIPlaying) {
+    if (gameState === 'Waiting for game to start') {
+      return 'Type anything to join'
+    }
+    return 'The game started without you. 😢'
+  }
+
+  return 'You are playing'
 })
