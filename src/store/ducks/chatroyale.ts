@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { Reducer } from 'redux'
 import { createAction } from 'utils/redux'
 
@@ -6,8 +7,8 @@ import { createAction } from 'utils/redux'
  */
 export enum Actions {
   SET_PLAYERS = 'royale/SET_PLAYERS',
+  ADD_PLAYER = 'royale/ADD_PLAYER',
   SET_GAME_STATE = 'royale/SET_GAME_STATE',
-  SET_MY_STATE = 'royale/SET_MY_STATE',
 }
 
 /**
@@ -16,7 +17,6 @@ export enum Actions {
 export const initialState = {
   players: [],
   gameState: 'Not connected',
-  myState: 'Connecting...',
 }
 
 /**
@@ -33,16 +33,17 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
         players: action.payload.players,
       }
     }
+    case Actions.ADD_PLAYER: {
+      const uniqNames = _.uniqBy([...state.players, action.payload.player], (n) => n.toLowerCase())
+      return {
+        ...state,
+        players: uniqNames,
+      }
+    }
     case Actions.SET_GAME_STATE: {
       return {
         ...state,
         gameState: action.payload.gameState,
-      }
-    }
-    case Actions.SET_MY_STATE: {
-      return {
-        ...state,
-        myState: action.payload.myState,
       }
     }
     default: {
@@ -57,13 +58,13 @@ export const setPlayers = (players: string[]) =>
   createAction(Actions.SET_PLAYERS, {
     players,
   })
+export const addPlayer = (player: string) =>
+  createAction(Actions.ADD_PLAYER, {
+    player,
+  })
 export const setGameState = (gameState: string) =>
   createAction(Actions.SET_GAME_STATE, {
     gameState,
-  })
-export const setMyState = (myState: string) =>
-  createAction(Actions.SET_MY_STATE, {
-    myState,
   })
 
 /**
@@ -71,8 +72,8 @@ export const setMyState = (myState: string) =>
  */
 export type ChatRoyaleActions =
   | ReturnType<typeof setPlayers>
+  | ReturnType<typeof addPlayer>
   | ReturnType<typeof setGameState>
-  | ReturnType<typeof setMyState>
 
 /**
  * Chat Royale state.
@@ -80,5 +81,4 @@ export type ChatRoyaleActions =
 export type ChatRoyaleState = {
   players: string[]
   gameState: string
-  myState: string
 }

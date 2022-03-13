@@ -3,8 +3,8 @@ import _ from 'lodash'
 export enum ChatRoyaleEvent {
   LogToChat,
   SetPlayers,
+  AddPlayer,
   SetGameState,
-  SetMyState,
 }
 
 const RECONNECT_INTERVAL = 5000
@@ -22,9 +22,6 @@ export default class ChatRoyale {
   private static handlers: { [key in ChatRoyaleEvent]?: () => void } = {}
   private static reconnectTimeout?: number
   private static printCloseMessage: boolean = false
-  private static gameState: GameState = GameState.Idle
-  private static allPlayers: string[]
-  private static username?: string
 
   public static connect() {
     ChatRoyale.ws = new WebSocket('ws://localhost:7896/echo')
@@ -68,8 +65,8 @@ export default class ChatRoyale {
 
   public static addHandler(type: ChatRoyaleEvent.LogToChat, handler: LogToChatHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetPlayers, handler: SetPlayersHandler): void
+  public static addHandler(type: ChatRoyaleEvent.AddPlayer, handler: AddPlayerHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetGameState, handler: SetGameStateHandler): void
-  public static addHandler(type: ChatRoyaleEvent.SetMyState, handler: SetMyStateHandler): void
   public static addHandler(type: ChatRoyaleEvent, handler: (...args: any) => void) {
     ChatRoyale.handlers[type] = handler
   }
@@ -94,16 +91,6 @@ export default class ChatRoyale {
     window.clearTimeout(ChatRoyale.reconnectTimeout)
   }
 
-  public static setUsername(username: string) {
-    ChatRoyale.username = username
-  }
-
-  private static amIPlaying(): boolean {
-    const lowercasePlayers = _.map(ChatRoyale.allPlayers, (s) => s.toLowerCase())
-
-    return _.includes(lowercasePlayers, ChatRoyale.username?.toLowerCase())
-  }
-
   public static getStateStringFromState(state: GameState): string {
     switch (state) {
       case GameState.Idle:
@@ -126,13 +113,12 @@ export default class ChatRoyale {
       const parsed = JSON.parse(evt.data)
       ChatRoyale.log(`Got a JSON message of type "${parsed.type}": ${evt.data}`)
       if (parsed.type === 'STATE') {
-        ChatRoyale.gameState = parsed.gameState
-        ChatRoyale.allPlayers = parsed.players
         ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, parsed.players)
-        const gameStateString = ChatRoyale.getStateStringFromState(ChatRoyale.gameState)
+        const gameStateString = ChatRoyale.getStateStringFromState(parsed.gameState)
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
-        const myState = ChatRoyale.amIPlaying() ? 'You are playing' : 'Type anything to join'
-        ChatRoyale.callHandler<SetMyStateHandler>(ChatRoyaleEvent.SetMyState, myState)
+      } else if (parsed.type === 'ADD_PLAYER') {
+        const newPlayerName = parsed.player
+        ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, newPlayerName)
       }
     } catch (e) {
       ChatRoyale.log("Got a message that wasn't JSON: " + evt.data)
@@ -145,7 +131,6 @@ export default class ChatRoyale {
       ChatRoyale.printCloseMessage = false
       ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, 'Disconnected')
       ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, [])
-      ChatRoyale.callHandler<SetMyStateHandler>(ChatRoyaleEvent.SetMyState, 'Reconnecting')
     }
 
     // Start trying to reconnect in case we never end up connecting in the first
@@ -161,5 +146,5 @@ export default class ChatRoyale {
 
 type LogToChatHandler = (msg: string) => void
 type SetPlayersHandler = (players: string[]) => void
+type AddPlayerHandler = (player: string) => void
 type SetGameStateHandler = (gameState: string) => void
-type SetMyStateHandler = (myState: string) => void
