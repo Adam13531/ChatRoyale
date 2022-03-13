@@ -26,7 +26,7 @@ export const getGameRules = createSelector([getChatRoyaleState], (state) => {
 
 export const getMyState = createSelector([getChatRoyaleState, getUserState], (state, user) => {
   const myName = user.username!
-  const { gameState, players } = state
+  const { gameState, players, losers } = state
 
   if (gameState === 'Disconnected') {
     return 'Reconnecting...'
@@ -34,6 +34,12 @@ export const getMyState = createSelector([getChatRoyaleState, getUserState], (st
 
   if (gameState === 'Not connected') {
     return 'Connecting...'
+  }
+
+  const lowercaseLosers = _.map(losers, (s) => s.toLowerCase())
+  const didILose = _.includes(lowercaseLosers, myName.toLowerCase())
+  if (didILose) {
+    return 'You lost! 😭'
   }
 
   const lowercasePlayers = _.map(players, (s) => s.toLowerCase())
