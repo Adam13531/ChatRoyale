@@ -36,7 +36,7 @@ import {
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
 import { setModerator } from 'store/ducks/user'
-import { setPlayers, setGameState, setMyState } from 'store/ducks/chatroyale'
+import { setPlayers, addPlayer, setGameState } from 'store/ducks/chatroyale'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -160,8 +160,8 @@ export class ChatClient extends Component<Props, State> {
     PubSub.addHandler(PubSubEvent.ExpiredAutomodMessage, this.onExpiredAutomodMessage)
     ChatRoyale.addHandler(ChatRoyaleEvent.LogToChat, this.onLogToChat)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetPlayers, this.onSetPlayers)
+    ChatRoyale.addHandler(ChatRoyaleEvent.AddPlayer, this.onAddPlayer)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetGameState, this.onSetGameState)
-    ChatRoyale.addHandler(ChatRoyaleEvent.SetMyState, this.onSetMyState)
 
     try {
       await this.client.connect()
@@ -362,7 +362,6 @@ export class ChatClient extends Component<Props, State> {
    */
   private onLogon = () => {
     this.props.updateStatus(Status.Logon)
-    ChatRoyale.setUsername(this.props.loginDetails!.username)
     this.connectToChatRoyale()
   }
 
@@ -888,8 +887,8 @@ export class ChatClient extends Component<Props, State> {
     this.props.setGameState(gameState)
   }
 
-  private onSetMyState = (myState: string) => {
-    this.props.setMyState(myState)
+  private onAddPlayer = (newPlayerName: string) => {
+    this.props.addPlayer(newPlayerName)
   }
 
   private onLogToChat = (test: string) => {
@@ -1478,8 +1477,8 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     setLastWhisperSender,
     setModerator,
     setPlayers,
+    addPlayer,
     setGameState,
-    setMyState,
     unshiftLog,
     updateEmotes,
     updateRoomState,
@@ -1530,8 +1529,8 @@ interface DispatchProps {
   setLastWhisperSender: typeof setLastWhisperSender
   setModerator: typeof setModerator
   setPlayers: typeof setPlayers
+  addPlayer: typeof addPlayer
   setGameState: typeof setGameState
-  setMyState: typeof setMyState
   unshiftLog: typeof unshiftLog
   updateRoomState: typeof updateRoomState
   updateEmotes: typeof updateEmotes
