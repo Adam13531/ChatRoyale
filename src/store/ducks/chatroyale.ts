@@ -9,6 +9,7 @@ export enum Actions {
   SET_PLAYERS = 'royale/SET_PLAYERS',
   ADD_PLAYER = 'royale/ADD_PLAYER',
   SET_GAME_STATE = 'royale/SET_GAME_STATE',
+  SET_GAME_RULES = 'royale/SET_GAME_RULES',
 }
 
 /**
@@ -17,6 +18,9 @@ export enum Actions {
 export const initialState = {
   players: [],
   gameState: 'Not connected',
+  prompt: '',
+  duplicatesAllowed: false,
+  timer: 99,
 }
 
 /**
@@ -46,6 +50,14 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
         gameState: action.payload.gameState,
       }
     }
+    case Actions.SET_GAME_RULES: {
+      return {
+        ...state,
+        prompt: action.payload.prompt,
+        duplicatesAllowed: action.payload.duplicatesAllowed,
+        timer: action.payload.timer,
+      }
+    }
     default: {
       return state
     }
@@ -66,6 +78,12 @@ export const setGameState = (gameState: string) =>
   createAction(Actions.SET_GAME_STATE, {
     gameState,
   })
+export const setGameRules = (prompt: string, duplicatesAllowed: boolean, timer: number) =>
+  createAction(Actions.SET_GAME_RULES, {
+    prompt,
+    duplicatesAllowed,
+    timer,
+  })
 
 /**
  * Chat Royale actions.
@@ -74,6 +92,7 @@ export type ChatRoyaleActions =
   | ReturnType<typeof setPlayers>
   | ReturnType<typeof addPlayer>
   | ReturnType<typeof setGameState>
+  | ReturnType<typeof setGameRules>
 
 /**
  * Chat Royale state.
@@ -81,4 +100,7 @@ export type ChatRoyaleActions =
 export type ChatRoyaleState = {
   players: string[]
   gameState: string
+  prompt: string
+  duplicatesAllowed: boolean
+  timer: number
 }

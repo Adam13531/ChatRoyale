@@ -5,6 +5,7 @@ export enum ChatRoyaleEvent {
   SetPlayers,
   AddPlayer,
   SetGameState,
+  SetGameRules,
 }
 
 const RECONNECT_INTERVAL = 5000
@@ -67,6 +68,7 @@ export default class ChatRoyale {
   public static addHandler(type: ChatRoyaleEvent.SetPlayers, handler: SetPlayersHandler): void
   public static addHandler(type: ChatRoyaleEvent.AddPlayer, handler: AddPlayerHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetGameState, handler: SetGameStateHandler): void
+  public static addHandler(type: ChatRoyaleEvent.SetGameRules, handler: SetGameRulesHandler): void
   public static addHandler(type: ChatRoyaleEvent, handler: (...args: any) => void) {
     ChatRoyale.handlers[type] = handler
   }
@@ -119,6 +121,10 @@ export default class ChatRoyale {
       } else if (parsed.type === 'ADD_PLAYER') {
         const newPlayerName = parsed.player
         ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, newPlayerName)
+      } else if (parsed.type === 'ROUND_START') {
+        const { prompt, duplicatesAllowed, time } = parsed
+        ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, 'Mid-game')
+        ChatRoyale.callHandler<SetGameRulesHandler>(ChatRoyaleEvent.SetGameRules, prompt, duplicatesAllowed, time)
       }
     } catch (e) {
       ChatRoyale.log("Got a message that wasn't JSON: " + evt.data)
@@ -148,3 +154,4 @@ type LogToChatHandler = (msg: string) => void
 type SetPlayersHandler = (players: string[]) => void
 type AddPlayerHandler = (player: string) => void
 type SetGameStateHandler = (gameState: string) => void
+type SetGameRulesHandler = (prompt: string, duplicatesAllowed: boolean, timer: number) => void
