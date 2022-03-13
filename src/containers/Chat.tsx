@@ -36,7 +36,7 @@ import {
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
 import { setModerator } from 'store/ducks/user'
-import { setPlayers, addPlayer, setGameState, setGameRules } from 'store/ducks/chatroyale'
+import { setPlayers, addPlayer, playerLost, setGameState, setGameRules } from 'store/ducks/chatroyale'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -161,6 +161,7 @@ export class ChatClient extends Component<Props, State> {
     ChatRoyale.addHandler(ChatRoyaleEvent.LogToChat, this.onLogToChat)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetPlayers, this.onSetPlayers)
     ChatRoyale.addHandler(ChatRoyaleEvent.AddPlayer, this.onAddPlayer)
+    ChatRoyale.addHandler(ChatRoyaleEvent.PlayerLost, this.onPlayerLost)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetGameState, this.onSetGameState)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetGameRules, this.onSetGameRules)
 
@@ -896,6 +897,10 @@ export class ChatClient extends Component<Props, State> {
     this.props.addPlayer(newPlayerName)
   }
 
+  private onPlayerLost = (playerName: string) => {
+    this.props.playerLost(playerName)
+  }
+
   private onLogToChat = (test: string) => {
     const logMsg: any = {
       id: nanoid(),
@@ -1483,6 +1488,7 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     setModerator,
     setPlayers,
     addPlayer,
+    playerLost,
     setGameState,
     setGameRules,
     unshiftLog,
@@ -1536,6 +1542,7 @@ interface DispatchProps {
   setModerator: typeof setModerator
   setPlayers: typeof setPlayers
   addPlayer: typeof addPlayer
+  playerLost: typeof playerLost
   setGameState: typeof setGameState
   setGameRules: typeof setGameRules
   unshiftLog: typeof unshiftLog

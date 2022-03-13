@@ -8,6 +8,7 @@ import { createAction } from 'utils/redux'
 export enum Actions {
   SET_PLAYERS = 'royale/SET_PLAYERS',
   ADD_PLAYER = 'royale/ADD_PLAYER',
+  PLAYER_LOST = 'royale/PLAYER_LOST',
   SET_GAME_STATE = 'royale/SET_GAME_STATE',
   SET_GAME_RULES = 'royale/SET_GAME_RULES',
 }
@@ -17,6 +18,7 @@ export enum Actions {
  */
 export const initialState = {
   players: [],
+  losers: [],
   gameState: 'Not connected',
   prompt: '',
   duplicatesAllowed: false,
@@ -42,6 +44,15 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
       return {
         ...state,
         players: uniqNames,
+      }
+    }
+    case Actions.PLAYER_LOST: {
+      const filtered = _.filter(state.players, (p) => p.toLowerCase() !== action.payload.player.toLowerCase())
+
+      return {
+        ...state,
+        players: filtered,
+        losers: [...state.players, action.payload.player],
       }
     }
     case Actions.SET_GAME_STATE: {
@@ -74,6 +85,10 @@ export const addPlayer = (player: string) =>
   createAction(Actions.ADD_PLAYER, {
     player,
   })
+export const playerLost = (player: string) =>
+  createAction(Actions.PLAYER_LOST, {
+    player,
+  })
 export const setGameState = (gameState: string) =>
   createAction(Actions.SET_GAME_STATE, {
     gameState,
@@ -91,6 +106,7 @@ export const setGameRules = (prompt: string, duplicatesAllowed: boolean, timer: 
 export type ChatRoyaleActions =
   | ReturnType<typeof setPlayers>
   | ReturnType<typeof addPlayer>
+  | ReturnType<typeof playerLost>
   | ReturnType<typeof setGameState>
   | ReturnType<typeof setGameRules>
 
@@ -99,6 +115,7 @@ export type ChatRoyaleActions =
  */
 export type ChatRoyaleState = {
   players: string[]
+  losers: string[]
   gameState: string
   prompt: string
   duplicatesAllowed: boolean

@@ -4,6 +4,7 @@ export enum ChatRoyaleEvent {
   LogToChat,
   SetPlayers,
   AddPlayer,
+  PlayerLost,
   SetGameState,
   SetGameRules,
 }
@@ -67,6 +68,7 @@ export default class ChatRoyale {
   public static addHandler(type: ChatRoyaleEvent.LogToChat, handler: LogToChatHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetPlayers, handler: SetPlayersHandler): void
   public static addHandler(type: ChatRoyaleEvent.AddPlayer, handler: AddPlayerHandler): void
+  public static addHandler(type: ChatRoyaleEvent.PlayerLost, handler: PlayerLostHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetGameState, handler: SetGameStateHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetGameRules, handler: SetGameRulesHandler): void
   public static addHandler(type: ChatRoyaleEvent, handler: (...args: any) => void) {
@@ -119,8 +121,9 @@ export default class ChatRoyale {
         const gameStateString = ChatRoyale.getStateStringFromState(parsed.gameState)
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
       } else if (parsed.type === 'ADD_PLAYER') {
-        const newPlayerName = parsed.player
-        ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, newPlayerName)
+        ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, parsed.player)
+      } else if (parsed.type === 'PLAYER_LOST') {
+        ChatRoyale.callHandler<PlayerLostHandler>(ChatRoyaleEvent.PlayerLost, parsed.player)
       } else if (parsed.type === 'ROUND_START') {
         const { prompt, duplicatesAllowed, time } = parsed
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, 'Mid-game')
@@ -153,5 +156,6 @@ export default class ChatRoyale {
 type LogToChatHandler = (msg: string) => void
 type SetPlayersHandler = (players: string[]) => void
 type AddPlayerHandler = (player: string) => void
+type PlayerLostHandler = (player: string) => void
 type SetGameStateHandler = (gameState: string) => void
 type SetGameRulesHandler = (prompt: string, duplicatesAllowed: boolean, timer: number) => void
