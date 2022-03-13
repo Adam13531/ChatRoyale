@@ -36,7 +36,7 @@ import {
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
 import { setModerator } from 'store/ducks/user'
-import { setPlayers, addPlayer, setGameState } from 'store/ducks/chatroyale'
+import { setPlayers, addPlayer, setGameState, setGameRules } from 'store/ducks/chatroyale'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -162,6 +162,7 @@ export class ChatClient extends Component<Props, State> {
     ChatRoyale.addHandler(ChatRoyaleEvent.SetPlayers, this.onSetPlayers)
     ChatRoyale.addHandler(ChatRoyaleEvent.AddPlayer, this.onAddPlayer)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetGameState, this.onSetGameState)
+    ChatRoyale.addHandler(ChatRoyaleEvent.SetGameRules, this.onSetGameRules)
 
     try {
       await this.client.connect()
@@ -887,6 +888,10 @@ export class ChatClient extends Component<Props, State> {
     this.props.setGameState(gameState)
   }
 
+  private onSetGameRules = (prompt: string, duplicatesAllowed: boolean, timer: number) => {
+    this.props.setGameRules(prompt, duplicatesAllowed, timer)
+  }
+
   private onAddPlayer = (newPlayerName: string) => {
     this.props.addPlayer(newPlayerName)
   }
@@ -1479,6 +1484,7 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     setPlayers,
     addPlayer,
     setGameState,
+    setGameRules,
     unshiftLog,
     updateEmotes,
     updateRoomState,
@@ -1531,6 +1537,7 @@ interface DispatchProps {
   setPlayers: typeof setPlayers
   addPlayer: typeof addPlayer
   setGameState: typeof setGameState
+  setGameRules: typeof setGameRules
   unshiftLog: typeof unshiftLog
   updateRoomState: typeof updateRoomState
   updateEmotes: typeof updateEmotes
