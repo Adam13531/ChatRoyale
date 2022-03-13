@@ -36,7 +36,7 @@ import {
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
 import { setModerator } from 'store/ducks/user'
-import { setPlayers } from 'store/ducks/chatroyale'
+import { setPlayers, setGameState, setMyState } from 'store/ducks/chatroyale'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -160,6 +160,8 @@ export class ChatClient extends Component<Props, State> {
     PubSub.addHandler(PubSubEvent.ExpiredAutomodMessage, this.onExpiredAutomodMessage)
     ChatRoyale.addHandler(ChatRoyaleEvent.LogToChat, this.onLogToChat)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetPlayers, this.onSetPlayers)
+    ChatRoyale.addHandler(ChatRoyaleEvent.SetGameState, this.onSetGameState)
+    ChatRoyale.addHandler(ChatRoyaleEvent.SetMyState, this.onSetMyState)
 
     try {
       await this.client.connect()
@@ -882,6 +884,14 @@ export class ChatClient extends Component<Props, State> {
     this.props.setPlayers(players)
   }
 
+  private onSetGameState = (gameState: string) => {
+    this.props.setGameState(gameState)
+  }
+
+  private onSetMyState = (myState: string) => {
+    this.props.setMyState(myState)
+  }
+
   private onLogToChat = (test: string) => {
     const logMsg: any = {
       id: nanoid(),
@@ -1468,6 +1478,8 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     setLastWhisperSender,
     setModerator,
     setPlayers,
+    setGameState,
+    setMyState,
     unshiftLog,
     updateEmotes,
     updateRoomState,
@@ -1518,6 +1530,8 @@ interface DispatchProps {
   setLastWhisperSender: typeof setLastWhisperSender
   setModerator: typeof setModerator
   setPlayers: typeof setPlayers
+  setGameState: typeof setGameState
+  setMyState: typeof setMyState
   unshiftLog: typeof unshiftLog
   updateRoomState: typeof updateRoomState
   updateEmotes: typeof updateEmotes
