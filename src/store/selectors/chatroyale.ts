@@ -14,6 +14,9 @@ const getUserState = (state: ApplicationState) => state.user
 export const getPlayers = createSelector([getChatRoyaleState], (state) => {
   return state.players
 })
+export const getLowercasePlayers = createSelector([getChatRoyaleState], (state) => {
+  return _.map(state.players, (p) => p.toLowerCase())
+})
 
 export const getGameState = createSelector([getChatRoyaleState], (state) => {
   return state.gameState
