@@ -10,6 +10,7 @@ import Bttv from 'libs/Bttv'
 import ChatRoyale, { ChatRoyaleEvent } from 'libs/ChatRoyale'
 import Chatter from 'libs/Chatter'
 import EmotesProvider, { Emote, EmoteProviderPrefix, TwitchEmote } from 'libs/EmotesProvider'
+import { getLowercasePlayers, getGameState } from 'store/selectors/chatroyale'
 import Ffz from 'libs/Ffz'
 import Message, { SerializedMessage } from 'libs/Message'
 import Notice from 'libs/Notice'
@@ -554,7 +555,16 @@ export class ChatClient extends Component<Props, State> {
         return
       }
 
-      this.props.addLog(serializedMessage)
+      // If during a game, then the player can't be a LOSER.
+      if (
+        this.props.gameState !== 'Mid-game' ||
+        _.includes(this.props.lowercasePlayers, serializedMessage.user.userName.toLowerCase())
+      ) {
+        this.props.addLog(serializedMessage)
+      } else if (serializedMessage.user.userName.toLowerCase() === this.props.loginDetails!.username.toLowerCase()) {
+        serializedMessage.message = `[this was only sent to regular Twitch chat and will not show up for players] ${serializedMessage.message}`
+        this.props.addLog(serializedMessage)
+      }
 
       if (
         !serializedMessage.historical &&
@@ -1470,6 +1480,8 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     loginDetails: getChatLoginDetails(state),
     playMessageSoundOnlyInOwnChannel: getPlayMessageSoundOnlyInOwnChannel(state),
     soundSettings: getSoundSettings(state),
+    lowercasePlayers: getLowercasePlayers(state),
+    gameState: getGameState(state),
     theme: getTheme(state),
   }),
   {
@@ -1520,6 +1532,8 @@ interface StateProps {
   loginDetails: ReturnType<typeof getChatLoginDetails>
   playMessageSoundOnlyInOwnChannel: ReturnType<typeof getPlayMessageSoundOnlyInOwnChannel>
   soundSettings: ReturnType<typeof getSoundSettings>
+  lowercasePlayers: ReturnType<typeof getLowercasePlayers>
+  gameState: ReturnType<typeof getGameState>
   theme: ReturnType<typeof getTheme>
 }
 
