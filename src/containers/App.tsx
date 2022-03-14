@@ -8,6 +8,7 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import { compose } from 'recompose'
 import semCompare from 'semver-compare'
 
+import ChatRoyaleHeader from 'components/ChatRoyaleHeader'
 import FlexContent from 'components/FlexContent'
 import FlexLayout from 'components/FlexLayout'
 import GlobalStyle from 'components/GlobalStyle'
@@ -170,6 +171,7 @@ class App extends React.Component<Props, State> {
             </FlexContent>
           </FlexLayout>
         </HeaderProvider>
+        <ChatRoyaleHeader />
       </ThemeProvider>
     )
   }
