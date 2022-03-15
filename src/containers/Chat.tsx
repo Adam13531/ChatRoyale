@@ -164,6 +164,7 @@ export class ChatClient extends Component<Props, State> {
     ChatRoyale.addHandler(ChatRoyaleEvent.AddPlayer, this.onAddPlayer)
     ChatRoyale.addHandler(ChatRoyaleEvent.PlayerLost, this.onPlayerLost)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetGameState, this.onSetGameState)
+    ChatRoyale.addHandler(ChatRoyaleEvent.PlayerWon, this.onPlayerWon)
     ChatRoyale.addHandler(ChatRoyaleEvent.SetGameRules, this.onSetGameRules)
 
     try {
@@ -897,6 +898,15 @@ export class ChatClient extends Component<Props, State> {
 
   private onSetGameState = (gameState: string) => {
     this.props.setGameState(gameState)
+  }
+
+  private onPlayerWon = (winner: string) => {
+    // TODO: handle this better
+    if (!winner) {
+      window.alert(`Everyone lost! 😂`)
+    } else {
+      window.alert(`Player won: ${winner}`)
+    }
   }
 
   private onSetGameRules = (prompt: string, duplicatesAllowed: boolean, timer: number) => {
