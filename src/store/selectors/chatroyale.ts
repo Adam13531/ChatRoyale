@@ -23,8 +23,8 @@ export const getGameState = createSelector([getChatRoyaleState], (state) => {
 })
 
 export const getGameRules = createSelector([getChatRoyaleState], (state) => {
-  const { prompt, duplicatesAllowed, timer } = state
-  return { prompt, duplicatesAllowed, timer }
+  const { prompt, duplicatesAllowed, timer, nonce } = state
+  return { prompt, duplicatesAllowed, timer, nonce }
 })
 
 export const getMyState = createSelector([getChatRoyaleState, getUserState], (state, user) => {

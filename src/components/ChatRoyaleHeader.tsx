@@ -34,7 +34,10 @@ class ChatRoyaleHeader extends React.Component<Props, State> {
   private timerId?: number
 
   public componentDidUpdate(prevProps: Props) {
-    if (prevProps.gameRules.prompt !== this.props.gameRules.prompt) {
+    if (
+      prevProps.gameRules.prompt !== this.props.gameRules.prompt ||
+      prevProps.gameRules.nonce !== this.props.gameRules.nonce
+    ) {
       this.setState(() => ({
         timer: this.props.gameRules.timer,
         startTime: Date.now(),
