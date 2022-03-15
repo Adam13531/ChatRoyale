@@ -7,6 +7,7 @@ export enum ChatRoyaleEvent {
   PlayerLost,
   SetGameState,
   SetGameRules,
+  PlayerWon,
 }
 
 const RECONNECT_INTERVAL = 5000
@@ -71,6 +72,7 @@ export default class ChatRoyale {
   public static addHandler(type: ChatRoyaleEvent.PlayerLost, handler: PlayerLostHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetGameState, handler: SetGameStateHandler): void
   public static addHandler(type: ChatRoyaleEvent.SetGameRules, handler: SetGameRulesHandler): void
+  public static addHandler(type: ChatRoyaleEvent.PlayerWon, handler: PlayerWonHandler): void
   public static addHandler(type: ChatRoyaleEvent, handler: (...args: any) => void) {
     ChatRoyale.handlers[type] = handler
   }
@@ -104,7 +106,7 @@ export default class ChatRoyale {
       case GameState.Round:
         return 'Mid-game'
       case GameState.InBetween:
-        return 'In between rounds'
+        return 'Waiting for the next round to start'
       case GameState.End:
         return 'End of game'
       default:
@@ -124,6 +126,13 @@ export default class ChatRoyale {
         ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, parsed.player)
       } else if (parsed.type === 'PLAYER_LOST') {
         ChatRoyale.callHandler<PlayerLostHandler>(ChatRoyaleEvent.PlayerLost, parsed.player)
+      } else if (parsed.type === 'ROUND_END') {
+        const gameStateString = ChatRoyale.getStateStringFromState(parsed.nextState)
+        ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
+
+        if (parsed.nextState === GameState.End) {
+          ChatRoyale.callHandler<PlayerWonHandler>(ChatRoyaleEvent.PlayerWon, parsed.winner)
+        }
       } else if (parsed.type === 'ROUND_START') {
         const { prompt, duplicatesAllowed, time } = parsed
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, 'Mid-game')
@@ -159,3 +168,4 @@ type AddPlayerHandler = (player: string) => void
 type PlayerLostHandler = (player: string) => void
 type SetGameStateHandler = (gameState: string) => void
 type SetGameRulesHandler = (prompt: string, duplicatesAllowed: boolean, timer: number) => void
+type PlayerWonHandler = (winner: string) => void
