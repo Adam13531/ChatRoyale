@@ -21,6 +21,11 @@ export const initialState = {
   losers: [],
   gameState: 'Not connected',
   prompt: '',
+
+  // Just some random string so that we can differentiate when setGameRules is
+  // called. It's mostly for testing since, at the moment, I don't have multiple
+  // prompts to differentiate rounds.
+  nonce: '',
   duplicatesAllowed: false,
   timer: 99,
 }
@@ -67,6 +72,7 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
         prompt: action.payload.prompt,
         duplicatesAllowed: action.payload.duplicatesAllowed,
         timer: action.payload.timer,
+        nonce: action.payload.nonce,
       }
     }
     default: {
@@ -98,6 +104,7 @@ export const setGameRules = (prompt: string, duplicatesAllowed: boolean, timer: 
     prompt,
     duplicatesAllowed,
     timer,
+    nonce: _.uniqueId('prompt-timer'),
   })
 
 /**
@@ -118,6 +125,7 @@ export type ChatRoyaleState = {
   losers: string[]
   gameState: string
   prompt: string
+  nonce: string
   duplicatesAllowed: boolean
   timer: number
 }
