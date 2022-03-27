@@ -42,6 +42,7 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
       return {
         ...state,
         players: action.payload.players,
+        losers: action.payload.losers,
       }
     }
     case Actions.ADD_PLAYER: {
@@ -57,7 +58,7 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
       return {
         ...state,
         players: filtered,
-        losers: [...state.players, action.payload.player],
+        losers: [...state.losers, action.payload.player],
       }
     }
     case Actions.SET_GAME_STATE: {
@@ -83,9 +84,10 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
 
 export default chatRoyaleReducer
 
-export const setPlayers = (players: string[]) =>
+export const setPlayers = (players: string[], losers: string[]) =>
   createAction(Actions.SET_PLAYERS, {
     players,
+    losers,
   })
 export const addPlayer = (player: string) =>
   createAction(Actions.ADD_PLAYER, {
