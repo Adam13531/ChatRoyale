@@ -117,7 +117,7 @@ export default class ChatRoyale {
   private static onMessage(evt: MessageEvent) {
     try {
       const parsed = JSON.parse(evt.data)
-      ChatRoyale.log(`Got a JSON message of type "${parsed.type}": ${evt.data}`)
+      console.log(`Got a JSON message of type "${parsed.type}": ${evt.data}`)
       if (parsed.type === 'STATE') {
         ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, parsed.players, parsed.losers)
         const gameStateString = ChatRoyale.getStateStringFromState(parsed.gameState)
@@ -139,7 +139,7 @@ export default class ChatRoyale {
         ChatRoyale.callHandler<SetGameRulesHandler>(ChatRoyaleEvent.SetGameRules, prompt, duplicatesAllowed, time)
       }
     } catch (e) {
-      ChatRoyale.log("Got a message that wasn't JSON: " + evt.data)
+      console.log("Got a message that wasn't JSON: " + evt.data)
     }
   }
 
