@@ -119,7 +119,7 @@ export default class ChatRoyale {
       const parsed = JSON.parse(evt.data)
       ChatRoyale.log(`Got a JSON message of type "${parsed.type}": ${evt.data}`)
       if (parsed.type === 'STATE') {
-        ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, parsed.players)
+        ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, parsed.players, parsed.losers)
         const gameStateString = ChatRoyale.getStateStringFromState(parsed.gameState)
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
       } else if (parsed.type === 'ADD_PLAYER') {
@@ -148,7 +148,7 @@ export default class ChatRoyale {
       ChatRoyale.log('WebSocket connection closed. Entering reconnect loop.')
       ChatRoyale.printCloseMessage = false
       ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, 'Disconnected')
-      ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, [])
+      ChatRoyale.callHandler<SetPlayersHandler>(ChatRoyaleEvent.SetPlayers, [], [])
     }
 
     // Start trying to reconnect in case we never end up connecting in the first
@@ -163,7 +163,7 @@ export default class ChatRoyale {
 }
 
 type LogToChatHandler = (msg: string) => void
-type SetPlayersHandler = (players: string[]) => void
+type SetPlayersHandler = (players: string[], losers: string[]) => void
 type AddPlayerHandler = (player: string) => void
 type PlayerLostHandler = (player: string) => void
 type SetGameStateHandler = (gameState: string) => void

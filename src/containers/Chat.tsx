@@ -892,8 +892,8 @@ export class ChatClient extends Component<Props, State> {
     this.props.addLog(rejectedMessage.serialize())
   }
 
-  private onSetPlayers = (players: string[]) => {
-    this.props.setPlayers(players)
+  private onSetPlayers = (players: string[], losers: string[]) => {
+    this.props.setPlayers(players, losers)
   }
 
   private onSetGameState = (gameState: string) => {
