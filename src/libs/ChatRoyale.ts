@@ -126,6 +126,8 @@ export default class ChatRoyale {
         ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, parsed.player)
       } else if (parsed.type === 'PLAYER_LOST') {
         ChatRoyale.callHandler<PlayerLostHandler>(ChatRoyaleEvent.PlayerLost, parsed.player, parsed.reason)
+      } else if (parsed.type === 'SAY') {
+        ChatRoyale.callHandler<LogToChatHandler>(ChatRoyaleEvent.LogToChat, parsed.message)
       } else if (parsed.type === 'ROUND_END') {
         const gameStateString = ChatRoyale.getStateStringFromState(parsed.nextState)
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
