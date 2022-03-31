@@ -125,7 +125,7 @@ export default class ChatRoyale {
       } else if (parsed.type === 'ADD_PLAYER') {
         ChatRoyale.callHandler<AddPlayerHandler>(ChatRoyaleEvent.AddPlayer, parsed.player)
       } else if (parsed.type === 'PLAYER_LOST') {
-        ChatRoyale.callHandler<PlayerLostHandler>(ChatRoyaleEvent.PlayerLost, parsed.player)
+        ChatRoyale.callHandler<PlayerLostHandler>(ChatRoyaleEvent.PlayerLost, parsed.player, parsed.reason)
       } else if (parsed.type === 'ROUND_END') {
         const gameStateString = ChatRoyale.getStateStringFromState(parsed.nextState)
         ChatRoyale.callHandler<SetGameStateHandler>(ChatRoyaleEvent.SetGameState, gameStateString)
@@ -165,7 +165,7 @@ export default class ChatRoyale {
 type LogToChatHandler = (msg: string) => void
 type SetPlayersHandler = (players: string[], losers: string[]) => void
 type AddPlayerHandler = (player: string) => void
-type PlayerLostHandler = (player: string) => void
+type PlayerLostHandler = (player: string, reason: string) => void
 type SetGameStateHandler = (gameState: string) => void
 type SetGameRulesHandler = (prompt: string, duplicatesAllowed: boolean, timer: number) => void
 type PlayerWonHandler = (winner: string) => void

@@ -9,6 +9,7 @@ export enum Actions {
   SET_PLAYERS = 'royale/SET_PLAYERS',
   ADD_PLAYER = 'royale/ADD_PLAYER',
   PLAYER_LOST = 'royale/PLAYER_LOST',
+  SET_LOSS_REASON = 'royale/SET_LOSS_REASON',
   SET_GAME_STATE = 'royale/SET_GAME_STATE',
   SET_GAME_RULES = 'royale/SET_GAME_RULES',
 }
@@ -19,6 +20,10 @@ export enum Actions {
 export const initialState = {
   players: [],
   losers: [],
+
+  // This is never cleared out and really has no reason to even be in this
+  // state. I'm speed-coding. 😳
+  lossReason: null,
   gameState: 'Not connected',
   prompt: '',
 
@@ -61,6 +66,12 @@ const chatRoyaleReducer: Reducer<ChatRoyaleState, ChatRoyaleActions> = (state = 
         losers: [...state.losers, action.payload.player],
       }
     }
+    case Actions.SET_LOSS_REASON: {
+      return {
+        ...state,
+        lossReason: action.payload.reason,
+      }
+    }
     case Actions.SET_GAME_STATE: {
       return {
         ...state,
@@ -97,6 +108,10 @@ export const playerLost = (player: string) =>
   createAction(Actions.PLAYER_LOST, {
     player,
   })
+export const setLossReason = (reason: string) =>
+  createAction(Actions.SET_LOSS_REASON, {
+    reason,
+  })
 export const setGameState = (gameState: string) =>
   createAction(Actions.SET_GAME_STATE, {
     gameState,
@@ -116,6 +131,7 @@ export type ChatRoyaleActions =
   | ReturnType<typeof setPlayers>
   | ReturnType<typeof addPlayer>
   | ReturnType<typeof playerLost>
+  | ReturnType<typeof setLossReason>
   | ReturnType<typeof setGameState>
   | ReturnType<typeof setGameRules>
 
@@ -125,6 +141,7 @@ export type ChatRoyaleActions =
 export type ChatRoyaleState = {
   players: string[]
   losers: string[]
+  lossReason: string | null
   gameState: string
   prompt: string
   nonce: string
