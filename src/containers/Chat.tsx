@@ -903,9 +903,9 @@ export class ChatClient extends Component<Props, State> {
   private onPlayerWon = (winner: string) => {
     // TODO: handle this better
     if (!winner) {
-      window.alert(`Everyone lost! 😂`)
+      this.onLogToChat(`Everyone lost! 😂`)
     } else {
-      window.alert(`Player won: ${winner}`)
+      this.onLogToChat(`🎉 Player won: ${winner}`)
     }
   }
 
@@ -921,7 +921,7 @@ export class ChatClient extends Component<Props, State> {
     this.props.playerLost(playerName)
     if (playerName.toLowerCase() === this.props.loginDetails?.username.toLowerCase()) {
       this.props.setLossReason(reason)
-      this.onLogToChat(`You lost because: ${reason}`)
+      this.onLogToChat(`😭 You lost because: ${reason}`)
     }
   }
 
