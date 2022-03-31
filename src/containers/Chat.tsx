@@ -37,7 +37,7 @@ import {
 } from 'store/ducks/chatters'
 import { addLog, clearLogs, markRejectedMessageAsHandled, purgeLog, purgeLogs, unshiftLog } from 'store/ducks/logs'
 import { setModerator } from 'store/ducks/user'
-import { setPlayers, addPlayer, playerLost, setGameState, setGameRules } from 'store/ducks/chatroyale'
+import { setPlayers, addPlayer, playerLost, setLossReason, setGameState, setGameRules } from 'store/ducks/chatroyale'
 import { ApplicationState } from 'store/reducers'
 import { getChannel } from 'store/selectors/app'
 import { getChatters, getChattersMap } from 'store/selectors/chatters'
@@ -917,8 +917,12 @@ export class ChatClient extends Component<Props, State> {
     this.props.addPlayer(newPlayerName)
   }
 
-  private onPlayerLost = (playerName: string) => {
+  private onPlayerLost = (playerName: string, reason: string) => {
     this.props.playerLost(playerName)
+    if (playerName.toLowerCase() === this.props.loginDetails?.username.toLowerCase()) {
+      this.props.setLossReason(reason)
+      this.onLogToChat(`You lost because: ${reason}`)
+    }
   }
 
   private onLogToChat = (test: string) => {
@@ -1511,6 +1515,7 @@ export default connect<StateProps, DispatchProps, OwnProps, ApplicationState>(
     setPlayers,
     addPlayer,
     playerLost,
+    setLossReason,
     setGameState,
     setGameRules,
     unshiftLog,
@@ -1567,6 +1572,7 @@ interface DispatchProps {
   setPlayers: typeof setPlayers
   addPlayer: typeof addPlayer
   playerLost: typeof playerLost
+  setLossReason: typeof setLossReason
   setGameState: typeof setGameState
   setGameRules: typeof setGameRules
   unshiftLog: typeof unshiftLog
