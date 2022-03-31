@@ -39,6 +39,10 @@ export const getMyState = createSelector([getChatRoyaleState, getUserState], (st
     return 'Connecting...'
   }
 
+  if (gameState === 'End of game') {
+    return 'The game ended'
+  }
+
   const lowercaseLosers = _.map(losers, (s) => s.toLowerCase())
   const didILose = _.includes(lowercaseLosers, myName.toLowerCase())
   if (didILose) {
