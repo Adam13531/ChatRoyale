@@ -6,6 +6,7 @@ import { Colors, Navbar } from '@blueprintjs/core'
 import styled from 'styled'
 import { ApplicationState } from 'store/reducers'
 import { getGameRules, getGameState, getMyState, getPlayers } from 'store/selectors/chatroyale'
+import { getChatLoginDetails } from 'store/selectors/user'
 
 const GameStateAndRules = styled(Navbar)`
   position: fixed;
@@ -75,7 +76,10 @@ class ChatRoyaleHeader extends React.Component<Props, State> {
    * @return Element to render.
    */
   public render() {
-    const { gameState, gameRules, myState, players } = this.props
+    const { gameState, gameRules, myState, players, loginDetails } = this.props
+    if (_.isNil(loginDetails)) {
+      return null
+    }
     const numPlayers = _.size(players)
     const playerPlural = numPlayers === 1 ? 'player' : 'players'
     const playerString = `${numPlayers} ${playerPlural}`
@@ -99,6 +103,7 @@ export default connect<StateProps, {}, OwnProps, ApplicationState>((state) => ({
   myState: getMyState(state),
   players: getPlayers(state),
   gameRules: getGameRules(state),
+  loginDetails: getChatLoginDetails(state),
 }))(ChatRoyaleHeader)
 
 /**
@@ -109,6 +114,7 @@ interface StateProps {
   gameRules: ReturnType<typeof getGameRules>
   myState: ReturnType<typeof getMyState>
   players: ReturnType<typeof getPlayers>
+  loginDetails: ReturnType<typeof getChatLoginDetails>
 }
 
 /**
