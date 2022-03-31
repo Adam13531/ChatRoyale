@@ -91,7 +91,7 @@ export default class ChatRoyale {
   private static onOpen() {
     ChatRoyale.log('Connected via WebSocket')
     ChatRoyale.printCloseMessage = true
-    ChatRoyale.ws!.send('Message to send')
+    ChatRoyale.ws!.send('hi')
 
     // Now that we've connected, we don't need to try to reconnect anymore.
     window.clearTimeout(ChatRoyale.reconnectTimeout)
