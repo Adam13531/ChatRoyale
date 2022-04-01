@@ -32,12 +32,12 @@ class Auth extends Component<Props, State> {
 
       const idToken = await Twitch.verifyIdToken(tokens.id)
 
-      if (tokens.redirect) {
-        // this.props.history.replace(Page.Auth, { redirect: tokens.redirect })
-        this.props.history.replace(Page.Auth, { redirect: '/AdamLearnsLive' })
-      }
-
       this.props.setTokens(tokens.access, idToken)
+
+      // if (tokens.redirect) {
+      // this.props.history.replace(Page.Auth, { redirect: tokens.redirect })
+      this.props.history.push('/AdamLearnsLive')
+      // }
     } catch {
       this.setState(() => ({ authDidFail: true }))
     }
