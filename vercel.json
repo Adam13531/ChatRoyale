@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "alias": "yata",
+  "alias": "chatroyale",
   "build": {
     "env": {
       "REACT_APP_VERSION": "@react_app_version",
