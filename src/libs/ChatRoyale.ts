@@ -27,7 +27,7 @@ export default class ChatRoyale {
   private static printCloseMessage: boolean = false
 
   public static connect() {
-    ChatRoyale.ws = new WebSocket('ws://localhost:7896/echo')
+    ChatRoyale.ws = new WebSocket(process.env.REACT_APP_CHAT_ROYALE_WEBSOCKET_ADDRESS)
     ChatRoyale.ws.onopen = ChatRoyale.onOpen
     ChatRoyale.ws.onmessage = ChatRoyale.onMessage
     ChatRoyale.ws.onclose = ChatRoyale.onClose
