@@ -189,6 +189,8 @@ class StreamList extends React.Component<Props, State> {
           this.focusFilterInput()
         }
       )
+
+      this.props.history.push('/AdamLearnsLive')
     } catch (error) {
       this.setState(() => ({ error }))
     }
