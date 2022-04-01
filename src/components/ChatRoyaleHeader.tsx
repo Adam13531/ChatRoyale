@@ -18,7 +18,7 @@ const GameStateAndRules = styled(Navbar)`
   // pointer-events: none;
   white-space: normal;
   height: auto;
-  font-size: 12px;
+  font-size: 16px;
 `
 
 /**
@@ -86,12 +86,15 @@ class ChatRoyaleHeader extends React.Component<Props, State> {
     const { prompt, duplicatesAllowed } = gameRules
 
     const duplicatesString = duplicatesAllowed ? '(duplicate answers allowed)' : '(unique answers ONLY)'
+    const timerColor = this.state.timer >= 0 ? 'unset' : 'red'
+
     return (
       <GameStateAndRules>
         <div>
-          {gameState} | {playerString} | {myState} | Timer: {this.state.timer}s
+          {gameState} | {playerString} | {myState} | Timer:{' '}
+          <span style={{ color: timerColor }}>{this.state.timer}s</span>
         </div>
-        {prompt && <div>Prompt: {prompt}</div>}
+        {prompt && <div style={{ fontWeight: 'bold' }}>Prompt: {prompt}</div>}
         {prompt && <div>{duplicatesString}</div>}
       </GameStateAndRules>
     )
